@@ -8,6 +8,8 @@ import numpy as np
 import torch
 import torch.nn as nn
 from torch.utils.data import TensorDataset, DataLoader
+from .settings import LstmParams, DataInfo
+
 
 try:
     _create_unverified_https_context = ssl._create_unverified_context
@@ -16,7 +18,6 @@ except AttributeError:
 else:
     ssl._create_default_https_context = _create_unverified_https_context
 nltk.download('punkt')
-# nltk.download()
 
 
 class SentimentNet(nn.Module):
@@ -57,27 +58,20 @@ class SentimentNet(nn.Module):
 
 
 def made_prediction(comment):
-    word2idx, test_sentences, test_labels = read_file()
+    word2idx = read_word2idx()
     model = get_model(word2idx)
 
-    seq_len = 200
     comment = clean_data(comment)
     comment = test_sentences_to_idx(comment, word2idx)
-    comment = pad_input(comment, seq_len)
-
-    prediction = predict_text(model, comment)
-    return prediction
+    comment = pad_input(comment)
+    return predict_text(model, comment)
 
 
 def get_model(word2idx):
     vocab_size = len(word2idx) + 1
-    output_size = 1
-    embedding_dim = 400
-    hidden_dim = 512
-    n_layers = 2
-
-    model = SentimentNet(vocab_size, output_size, embedding_dim, hidden_dim, n_layers)
-    model.load_state_dict(torch.load('data/models/lstm_sentiment_analysis.pt'))
+    model = SentimentNet(vocab_size, LstmParams.OUTPUT_SIZE, LstmParams.EMBEDDING_DIM, LstmParams.HIDDEN_DIM,
+                         LstmParams.N_LAYERS)
+    model.load_state_dict(torch.load(LstmParams.WAY))
     return model
 
 
@@ -93,7 +87,7 @@ def predict_text(model, text):
     return (output.item())
 
 
-def test_lstm():
+def test_lstm(is_accuracy=False):
     comments = ['this is not very good movie', 'amazing, i want to watch next part',
                 'great work, never seen same', 'i love leonardo dicaprio', 'normal movie, nothing special',
                 'Ryan Gosling is a very talented actor. he often starred in melodramas. Girls love him',
@@ -106,13 +100,13 @@ def test_lstm():
     word2idx, test_sentences, test_labels = read_file()
     comments_idx = test_sentences_to_idx(comments, word2idx)
 
-    seq_len = 200
-    test_sentences = pad_input(test_sentences, seq_len)
-    comments_idx = pad_input(comments_idx, seq_len)
+    test_sentences = pad_input(test_sentences)
+    comments_idx = pad_input(comments_idx)
 
-    # check_accuracy(test_sentences, test_labels, word2idx)
-    check_comments(comments, comments_idx, word2idx)
-    print(1)
+    if is_accuracy is True:
+        check_accuracy(test_sentences, test_labels, word2idx)
+    else:
+        check_comments(comments, comments_idx, word2idx)
 
 
 def check_comments(comments, test_sentences, word2idx):
@@ -121,23 +115,21 @@ def check_comments(comments, test_sentences, word2idx):
     for i, item in enumerate(test_sentences):
         pred = predict_text(model, [item])
         print(f'{comments[i]}: {pred}')
-    print(1)
 
 
 def check_accuracy(test_sentences, test_labels, word2idx):
     num_correct = 0
-    batch_size = 200
     test_losses = []
 
     model = get_model(word2idx)
-    h = model.init_hidden(batch_size)
+    h = model.init_hidden(DataInfo.BATCH_SIZE)
     model.eval()
 
     criterion = nn.BCELoss()
 
     test_labels = np.array(test_labels)
     test_data = TensorDataset(torch.from_numpy(test_sentences), torch.from_numpy(test_labels))
-    test_loader = DataLoader(test_data, shuffle=True, batch_size=batch_size)
+    test_loader = DataLoader(test_data, shuffle=True, batch_size=DataInfo.BATCH_SIZE)
 
     device = torch.device("cpu")
     for inputs, labels in test_loader:
@@ -177,9 +169,8 @@ def train_lstm():
     test_sentences = test_sentences_to_idx(test_sentences, word2idx)
     print('sentences to indexes')
 
-    seq_len = 200
-    train_sentences = pad_input(train_sentences, seq_len)
-    test_sentences = pad_input(test_sentences, seq_len)
+    train_sentences = pad_input(train_sentences)
+    test_sentences = pad_input(test_sentences)
     print('added inputs')
 
     save_to_file(word2idx, test_sentences, test_labels)
@@ -189,8 +180,8 @@ def train_lstm():
 
 
 def get_files(num_train, num_test):
-    train_file = bz2.BZ2File('data/amazon/train.ft.txt.bz2')
-    test_file = bz2.BZ2File('data/amazon/test.ft.txt.bz2')
+    train_file = bz2.BZ2File(DataInfo.TRAIN_FILE_WAY)
+    test_file = bz2.BZ2File(DataInfo.TEST_FILE_WAY)
 
     train_file = train_file.readlines()
     test_file = test_file.readlines()
@@ -265,26 +256,33 @@ def test_sentences_to_idx(test_sentences, word2idx):
     return idx_sentences
 
 
-def pad_input(sentences, seq_len):
-    features = np.zeros((len(sentences), seq_len), dtype=int)
+def pad_input(sentences):
+    features = np.zeros((len(sentences), DataInfo.SEQ_LEN), dtype=int)
     for ii, review in enumerate(sentences):
         if len(review) != 0:
-            features[ii, -len(review):] = np.array(review)[:seq_len]
+            features[ii, -len(review):] = np.array(review)[:DataInfo.SEQ_LEN]
     return features
 
 
 def save_to_file(word2idx, test_sentences, test_labels):
     data = [word2idx, test_sentences, test_labels]
-    file = open('info', 'wb')
+    file = open(DataInfo.WAY, 'wb')
     pickle.dump(data, file)
     file.close()
 
 
 def read_file():
-    file = open('data/info', 'rb')
+    file = open(DataInfo.WAY, 'rb')
     data = pickle.load(file)
     file.close()
     return data[0], data[1], data[2]
+
+
+def read_word2idx():
+    file = open(DataInfo.WAY, 'rb')
+    data = pickle.load(file)
+    file.close()
+    return data[0]
 
 
 def train_model(train_sentences, test_sentences, train_labels, test_labels, word2idx):
@@ -300,11 +298,9 @@ def train_model(train_sentences, test_sentences, train_labels, test_labels, word
     val_data = TensorDataset(torch.from_numpy(val_sentences), torch.from_numpy(val_labels))
     test_data = TensorDataset(torch.from_numpy(test_sentences), torch.from_numpy(test_labels))
 
-    batch_size = 200
-
-    train_loader = DataLoader(train_data, shuffle=True, batch_size=batch_size)
-    val_loader = DataLoader(val_data, shuffle=True, batch_size=batch_size)
-    test_loader = DataLoader(test_data, shuffle=True, batch_size=batch_size)
+    train_loader = DataLoader(train_data, shuffle=True, batch_size=DataInfo.BATCH_SIZE)
+    val_loader = DataLoader(val_data, shuffle=True, batch_size=DataInfo.BATCH_SIZE)
+    test_loader = DataLoader(test_data, shuffle=True, batch_size=DataInfo.BATCH_SIZE)
 
     is_cuda = torch.cuda.is_available()
 
@@ -321,12 +317,8 @@ def train_model(train_sentences, test_sentences, train_labels, test_labels, word
     print(sample_x.shape, sample_y.shape)
 
     vocab_size = len(word2idx) + 1
-    output_size = 1
-    embedding_dim = 400
-    hidden_dim = 512
-    n_layers = 2
-
-    model = SentimentNet(vocab_size, output_size, embedding_dim, hidden_dim, n_layers)
+    model = SentimentNet(vocab_size, LstmParams.OUTPUT_SIZE, LstmParams.EMBEDDING_DIM, LstmParams.HIDDEN_DIM,
+                         LstmParams.N_LAYERS)
     model.to(device)
     print(model)
 
@@ -342,7 +334,7 @@ def train_model(train_sentences, test_sentences, train_labels, test_labels, word
 
     model.train()
     for i in range(epochs):
-        h = model.init_hidden(batch_size)
+        h = model.init_hidden(DataInfo.BATCH_SIZE)
 
         for inputs, labels in train_loader:
             counter += 1
@@ -356,7 +348,7 @@ def train_model(train_sentences, test_sentences, train_labels, test_labels, word
             optimizer.step()
 
             if counter % print_every == 0:
-                val_h = model.init_hidden(batch_size)
+                val_h = model.init_hidden(DataInfo.BATCH_SIZE)
                 val_losses = []
                 model.eval()
                 for inp, lab in val_loader:
@@ -372,7 +364,7 @@ def train_model(train_sentences, test_sentences, train_labels, test_labels, word
                       "Loss: {:.6f}...".format(loss.item()),
                       "Val Loss: {:.6f}".format(np.mean(val_losses)))
                 if np.mean(val_losses) <= valid_loss_min:
-                    torch.save(model.state_dict(), 'data/models/state_dict.pt')
+                    torch.save(model.state_dict(), LstmParams.WAY)
                     print('Validation loss decreased ({:.6f} --> {:.6f}).  Saving model ...'.format(valid_loss_min,
                                                                                                     np.mean(
                                                                                                         val_losses)))
