@@ -1,0 +1,201 @@
+body{
+    font-size: 1rem;
+    line-height: 1.5;
+}
+.header{
+    border-bottom: 1px solid #dcdcdc;
+    margin-bottom: 20px;
+}
+    .navigation{
+        display: flex;
+        justify-content: right;
+    }
+    .profile{
+        display: flex;
+        justify-content: left;
+    }
+        .navigation ul, .profile ul{
+            list-style-type: none;
+            display: flex;
+            margin: 15px 0;
+            padding: 0 1rem;
+        }
+        .navigation li, .profile li{
+            display: list-item;
+            margin: 0;
+        }
+            .navigation a{
+                background-color: transparent;
+                display: block;
+                text-decoration: none;
+                padding: 0.6rem 1.1rem;
+                color: #475872;
+                border: 0;
+                font-weight: bold;
+            }
+            .navigation a:hover{
+                color: #f6436d;
+            }
+            .profile span{
+                background-color: transparent;
+                display: block;
+                text-decoration: none;
+                padding: 0.6rem 1.1rem;
+                color: #f6436d;
+                border: 0;
+                font-weight: bold;
+            }
+.fig{
+    display: block;
+    text-align: center;
+    font-style: italic;
+    margin-top: 0;
+    margin-bottom: 20px;
+    padding: 15px 0;
+    color: #475872;
+    border: 1px solid #dcdcdc;
+    border-radius: 0.5rem;
+}
+    .fig img{
+        width: 200px;
+        height: 320px;
+        object-fit:cover;
+    }
+    .fig figcaption{
+        margin-top: 15px;
+    }
+    .fig a{
+        background-color: transparent;
+        font-weight: bold;
+        color: #475872;
+        text-decoration: none;
+    }
+
+    .fig a:hover{
+        color: #f6436d;
+    }
+.pages{
+    display: flex;
+    justify-content: center;
+}
+    .pages ul{
+        list-style-type: none;
+        display: flex;
+        margin: 15px 0;
+        padding: 0 1rem;
+        border: 1px solid #dcdcdc;
+        border-radius: 0.5rem;
+    }
+        .pages li{
+            display: list-item;
+            margin: 0;
+        }
+            .pages a, .pages span{
+                border: 0;
+                display: block;
+                padding: 0.6rem 1.1rem;
+            }
+            .pages span {
+                background-color: #f6436d;
+                color: #fff;
+            }
+            .pages a{
+                background-color: transparent;
+                color: #475872;
+                text-decoration: none;
+            }
+
+            .pages a:hover{
+                background-color: #eaeaea;
+                color: #686e76;
+            }
+/* item movie */
+.container-left{
+    width: 100%;
+}
+    .img-item-movie{
+        display: block;
+        text-align: center;
+        font-style: italic;
+        margin-top: 0;
+        margin-bottom: 5px;
+        padding: 15px 0;
+        border: 1px solid #dcdcdc;
+        border-radius: 0.5rem;
+    }
+    .img-item-movie #movie_name{
+        background-color: transparent;
+        margin-top: 15px;
+        margin-bottom: 0px;
+        font-weight: bold;
+        font-size: 16px;
+        color: #f6436d;
+    }
+    .img-item-movie #movie_year{
+        background-color: transparent;
+        font-weight: bold;
+        font-size: 14px;
+        color: #475872;
+    }
+
+.container-right{
+    width: 100%;
+}
+.container-add-comment, .container-comments, .similar-movies{
+    margin: 10px 0;
+    padding: 15px;
+}
+.container-add-comment{
+
+}
+    .item-comment{
+        padding: 10px 15px;
+        margin: 10px 0;
+        border: 1px solid #dcdcdc;
+    }
+    .item-comment-good{
+        border: 2px solid green;
+    }
+    .item-comment-bad{
+        border: 2px solid #f6436d;
+    }
+        .item-comment ul{
+            list-style-type: none;
+            margin: 0 5px;
+        }
+        .item-comment li{
+            display: list-item;
+            margin: 0;
+        }
+
+    #comment{
+        width: 100%;
+        border: 1px solid #dcdcdc;
+        padding: 15px 10px;
+        font-size: 14px;
+        color: #475872;
+    }
+    #comment:focus{
+        background-color: transparent;
+        resize: none;
+        outline: none;
+    }
+    .container-add-comment p{
+        text-align:center;
+    }
+        .container-add-comment p .submit{
+            background-color: transparent;
+            background-repeat: no-repeat;
+            border: 1px solid #dcdcdc;
+            cursor: pointer;
+            overflow: hidden;
+            outline: none;
+            font-weight: bold;
+            font-size: 14px;
+            color: #475872;
+            padding: 5px 20px;
+        }
+        .container-add-comment p .submit:hover{
+            background-color: #f6436d;
+            color: #fff;
+        }
