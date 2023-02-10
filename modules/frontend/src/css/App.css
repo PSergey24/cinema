@@ -154,9 +154,13 @@ body{
         border: 1px solid #dcdcdc;
     }
     .item-comment-good{
+        padding: 10px 15px;
+        margin: 10px 0;
         border: 2px solid green;
     }
     .item-comment-bad{
+        padding: 10px 15px;
+        margin: 10px 0;
         border: 2px solid #f6436d;
     }
         .item-comment ul{

@@ -8,7 +8,6 @@ from modules.models.lstm import made_prediction
 from datetime import datetime
 import starlette.status as status
 import math
-from pathlib import Path
 
 app = FastAPI()
 

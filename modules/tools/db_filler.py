@@ -1,8 +1,6 @@
 import pandas as pd
-from modules.sql_worker import crud, models, schemas
+from modules.sql_worker import models, schemas, crud
 from modules.sql_worker.database import SessionLocal, engine
-from fastapi import Depends, FastAPI, HTTPException
-from sqlalchemy.orm import Session
 
 
 def get_db():

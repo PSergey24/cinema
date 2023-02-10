@@ -1,5 +1,4 @@
-from modules.tools.db_filler import db_creator, movies_csv_to_db, get_movies, get_genres
-from modules.models.lstm import train_lstm, test_lstm
+from modules.models.lstm import test_lstm
 
 
 if __name__ == '__main__':

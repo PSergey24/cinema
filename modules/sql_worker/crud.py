@@ -1,7 +1,6 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
-
-from . import models, schemas
+from modules.sql_worker import models
 
 
 def create_movie(db: Session, movie):
