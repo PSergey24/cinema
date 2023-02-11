@@ -58,3 +58,9 @@ def get_genres():
     db = SessionLocal()
     genres = crud.get_genres(db)
     return genres
+
+
+def get_comments():
+    db = SessionLocal()
+    comments = crud.get_comments(db)
+    return comments

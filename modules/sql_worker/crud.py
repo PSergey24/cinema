@@ -24,6 +24,13 @@ def create_genre_models(genres):
     return [models.Genre(movie_id=item.movie_id, genre=item.genre) for item in genres]
 
 
+def get_last_comment_id(db: Session):
+    last_comment = db.query(models.Comment).order_by(desc(models.Comment.id)).limit(1).all()
+    if len(last_comment) == 0:
+        return 0
+    return last_comment[0].id
+
+
 def create_comment(db: Session, movie_id, comment, is_toxic, current_time):
     db_comment = models.Comment(movie_id=movie_id, comment=comment, is_toxic=is_toxic, date_time=current_time)
     db.add(db_comment)
@@ -49,6 +56,10 @@ def get_count_movies(db: Session):
 
 def get_genres(db: Session):
     return db.query(models.Genre).all()
+
+
+def get_comments(db: Session):
+    return db.query(models.Comment).all()
 
 
 def get_last_movie_id(db: Session):

@@ -1,11 +1,14 @@
 import math
 import sys
-from fastapi import FastAPI
+import json
+from datetime import datetime
+from fastapi import FastAPI, Body, Form, Request
 from fastapi.middleware.cors import CORSMiddleware
 
 sys.path.append(r"/Users/sergey/Applications/Pycharm/PycharmProjects/cinema")
 from modules.sql_worker import crud
 from modules.sql_worker.database import SessionLocal
+from modules.models.lstm import made_prediction
 
 
 app = FastAPI()
@@ -55,3 +58,17 @@ def show_movie(movie_id: int):
         movie.comments[i].date_time = item.date_time.strftime('%Y-%m-%d %H:%M:%S')
     return movie
 
+
+@app.post('/add_comment')
+def add_comment(data=Body()):
+    db = SessionLocal()
+    comment = data["body"]["comment"]
+    movie_id = data["body"]["movie_id"]
+    toxic_score = round(made_prediction([comment]), 3)
+    current_time = datetime.now()
+
+    new_comment_id = crud.get_last_comment_id(db) + 1
+    crud.create_comment(db=db, movie_id=movie_id, comment=comment, is_toxic=toxic_score, current_time=current_time)
+
+    res = {'id': new_comment_id, 'is_toxic': toxic_score, 'date_time': current_time.strftime('%Y-%m-%d %H:%M:%S')}
+    return res
