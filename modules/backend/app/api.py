@@ -1,8 +1,7 @@
 import math
 import sys
-import json
 from datetime import datetime
-from fastapi import FastAPI, Body, Form, Request
+from fastapi import FastAPI, Body
 from fastapi.middleware.cors import CORSMiddleware
 
 sys.path.append(r"/Users/sergey/Applications/Pycharm/PycharmProjects/cinema")
@@ -44,8 +43,23 @@ def show_movies():
     last_page = math.ceil(count_movies / movies_on_page)
 
     movies = crud.get_some_movies(db=db, count=movies_on_page, skip=skip)
+    res = {"movies": movies, "current_page": 1, "last_page": last_page}
+    return res
 
-    return movies
+
+@app.get("/movies/pages/{page}")
+def show_movies_by_pages(page: int):
+    db = SessionLocal()
+
+    movies_on_page = 9
+    skip = movies_on_page * (page - 1)
+
+    count_movies = crud.get_count_movies(db=db)
+    last_page = math.ceil(count_movies / movies_on_page)
+
+    movies = crud.get_some_movies(db=db, count=movies_on_page, skip=skip)
+    res = {"movies": movies, "current_page": page, "last_page": last_page}
+    return res
 
 
 @app.get("/movie/{movie_id}")
