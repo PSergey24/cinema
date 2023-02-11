@@ -1,5 +1,6 @@
 import React from 'react'
 import Header from '../components/Header'
+import HomeFirst from '../components/HomeFirst'
 
 class Home extends React.Component{
 
@@ -7,7 +8,7 @@ class Home extends React.Component{
         return(
             <div id="home">
                 <Header />
-                <p>hello</p>
+                <HomeFirst />
             </div>
         )
     }

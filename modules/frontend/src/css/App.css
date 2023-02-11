@@ -2,6 +2,8 @@ body{
     font-size: 1rem;
     line-height: 1.5;
 }
+
+/* header */
 .header{
     border-bottom: 1px solid #dcdcdc;
     margin-bottom: 20px;
@@ -45,6 +47,8 @@ body{
                 border: 0;
                 font-weight: bold;
             }
+
+/* movies */
 .fig{
     display: block;
     text-align: center;
@@ -109,6 +113,8 @@ body{
                 background-color: #eaeaea;
                 color: #686e76;
             }
+
+
 /* item movie */
 .container-left{
     width: 100%;
@@ -203,3 +209,53 @@ body{
             background-color: #f6436d;
             color: #fff;
         }
+
+/* home */
+
+.form{
+    justify-content: center;
+    border: 2px solid #dcdcdc;
+    padding: 10px 20px;
+}
+    .registration, .authorization{
+        display: block;
+    }
+    .registration h1, .authorization h1{
+        width: 100%;
+        text-align: center;
+        padding: 0.6rem 1.1rem;
+        color: #f6436d;
+        font-weight: bold;
+        font-size: 22px;
+    }
+    .registration input, .authorization input{
+        border: 2px solid #dcdcdc;
+        width: 100%;
+        margin: 5px 0;
+        padding: 8px;
+    }
+    .registration input:focus, .authorization input:focus{
+        border: 2px solid #f6436d;
+        resize: none;
+        outline: none;
+    }
+    .registration p, .authorization p{
+        text-align: center;
+        margin: 0;
+    }
+        .registration button, .authorization button{
+            width: 40%;
+            margin: 5px 0;
+            border: 2px solid #dcdcdc;
+            cursor: pointer;
+            overflow: hidden;
+            outline: none;
+            font-weight: bold;
+            font-size: 14px;
+            color: #475872;
+            padding: 5px 20px;
+        }
+    .registration p .submit:hover, .authorization p .submit:hover{
+        background-color: #f6436d;
+        color: #fff;
+    }
