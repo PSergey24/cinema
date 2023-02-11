@@ -1,8 +1,8 @@
-import React, {useState, useEffect} from 'react'
+import React, {useEffect} from 'react'
 import { useParams } from 'react-router-dom'
 import axios from 'axios'
 import Header from '../components/Header'
-import ItemMovieInfo from '../components/ItemMovieInfo'
+import ItemMovieFirst from '../components/ItemMovieFirst'
 import ItemMovieSecond from '../components/ItemMovieSecond'
 
 
@@ -15,14 +15,14 @@ export default function ItemMovie() {
         axios.get(`http://0.0.0.0:8000/movie/${movieId}`).then((response) => {
             setMovie(response.data);
         })
-    }, [])
+    }, [movieId])
 
     if (!movie) return null;
 
     return (
         <div id="movie">
             <Header />
-            <ItemMovieInfo movie={movie} />
+            <ItemMovieFirst movie={movie} />
             <ItemMovieSecond movie={movie} />
         </div>
     )

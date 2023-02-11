@@ -6,7 +6,7 @@ class MoviesItem extends React.Component{
         return(
             <div className="col-md-4 col-lg-4">
                 <figure className="fig">
-                    <img src={this.props.link} />
+                    <img src={this.props.link} alt={this.props.name} />
                     <figcaption><a href={"/movie/" + this.props.id}>{this.props.name}</a></figcaption>
                 </figure>
             </div>

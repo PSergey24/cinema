@@ -9,7 +9,7 @@ const ItemMovieInfo = (props) => {
                 <div className="col-md-3 col-lg-3">
                     <div className="container-left">
                         <figure className="img-item-movie">
-                            <img src={props.movie.link} />
+                            <img src={props.movie.link} alt={props.movie.name} />
                             <h5 id="movie_name">{props.movie.name}</h5>
                             <p id="movie_year">{props.movie.year}</p>
                         </figure>

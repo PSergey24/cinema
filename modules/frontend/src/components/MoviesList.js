@@ -7,7 +7,7 @@ class MoviesList extends React.Component{
         return(
             <div className="row">
                 {this.props.moviesList.map((movie) => (
-                    <MoviesItem id={movie.id} name={movie.name} link={movie.link} />
+                    <MoviesItem key={movie.id} id={movie.id} name={movie.name} link={movie.link} />
                 ))}
             </div>
         )

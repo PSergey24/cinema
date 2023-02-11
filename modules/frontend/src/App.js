@@ -14,8 +14,8 @@ class App extends React.Component{
             <Router>
                 <Routes>
                     <Route path="/" element={<Home/>} exact/>
-                    <Route path="/movies" element={<Movies path="/movies" />} exact/>
-                    <Route path="/movies/pages/:id" element={<Movies path="/movies/pages/" />} exact/>
+                    <Route path="/movies" element={<Movies/>} exact/>
+                    <Route path="/movies/pages/:id" element={<Movies/>} exact/>
                     <Route path="/movie/:id" element={<ItemMovie/>} />
                 </Routes>
             </Router>
