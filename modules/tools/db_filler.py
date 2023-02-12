@@ -64,3 +64,9 @@ def get_comments():
     db = SessionLocal()
     comments = crud.get_comments(db)
     return comments
+
+
+def get_users():
+    db = SessionLocal()
+    comments = crud.get_users(db)
+    return comments

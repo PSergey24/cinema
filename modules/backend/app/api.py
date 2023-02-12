@@ -1,13 +1,17 @@
 import math
 import sys
+import fastapi as _fastapi
+import fastapi.security as _security
 from datetime import datetime
 from fastapi import FastAPI, Body
 from fastapi.middleware.cors import CORSMiddleware
+import sqlalchemy.orm as _orm
 
 sys.path.append(r"/Users/sergey/Applications/Pycharm/PycharmProjects/cinema")
 from modules.sql_worker import crud
 from modules.sql_worker.database import SessionLocal
 from modules.models.lstm import made_prediction
+from modules.sql_worker import schemas as _schemas
 
 
 app = FastAPI()
@@ -30,6 +34,43 @@ app.add_middleware(
 @app.get("/")
 def read_root():
     return {"message": "Welcome to your todo list. hi!!!"}
+
+
+@app.post("/api/users")
+def create_user(data=Body()):
+    db = SessionLocal()
+    login = data["body"]["login"]
+    hashed_password = data["body"]["hashed_password"]
+
+    db_user = crud.get_user_by_login(login, db)
+    if db_user:
+        raise _fastapi.HTTPException(status_code=400, detail="Login already in use")
+
+    user = _schemas.UserCreate(login=login, hashed_password=hashed_password)
+    user = crud.create_user(user, db)
+    return crud.create_token(user)
+
+
+@app.post("/api/token")
+def generate_token(data=Body()):
+    db = SessionLocal()
+    login = data["body"]["login"]
+    password = data["body"]["hashed_password"]
+
+    user = crud.authenticate_user(login, password, db)
+
+    if not user:
+        raise _fastapi.HTTPException(status_code=401, detail="Invalid Credentials")
+    return crud.create_token(user)
+
+
+@app.post("/api/users/me")
+def get_user(data=Body()):
+    db = SessionLocal()
+    token = data["body"]["token"]
+
+    user = crud.get_current_user(db, token)
+    return user
 
 
 @app.get("/movies")

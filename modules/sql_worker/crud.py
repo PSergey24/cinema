@@ -1,6 +1,58 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
 from modules.sql_worker import models
+from modules.sql_worker import schemas as _schemas
+import fastapi as _fastapi
+import fastapi.security as _security
+import sqlalchemy.orm as _orm
+import passlib.hash as _hash
+import jwt as _jwt
+
+
+oauth2schema = _security.OAuth2PasswordBearer(tokenUrl="/api/token")
+JWT_SECRET = "myjwtsecret"
+
+
+def get_user_by_login(login: str, db):
+    return db.query(models.User).filter(models.User.login == login).first()
+
+
+def create_user(user: _schemas.UserCreate, db):
+    user_obj = models.User(
+        login=user.login, hashed_password=user.hashed_password
+    )
+    db.add(user_obj)
+    db.commit()
+    db.refresh(user_obj)
+    return user_obj
+
+
+def authenticate_user(login: str, password: str, db):
+    user = get_user_by_login(db=db, login=login)
+
+    if not user:
+        return False
+
+    if password == user.hashed_password:
+        return user
+    return False
+
+
+def create_token(user: models.User):
+    user_obj = _schemas.User.from_orm(user)
+    token = _jwt.encode(user_obj.dict(), JWT_SECRET)
+    return dict(access_token=token, token_type="bearer")
+
+
+def get_current_user(db, token):
+    try:
+        payload = _jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
+        user = db.query(models.User).get(payload["id"])
+    except:
+        raise _fastapi.HTTPException(
+            status_code=401, detail="Invalid Email or Password"
+        )
+    return _schemas.User.from_orm(user)
 
 
 def create_movie(db: Session, movie):
@@ -60,6 +112,10 @@ def get_genres(db: Session):
 
 def get_comments(db: Session):
     return db.query(models.Comment).all()
+
+
+def get_users(db: Session):
+    return db.query(models.User).all()
 
 
 def get_last_movie_id(db: Session):
