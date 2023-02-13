@@ -3,6 +3,7 @@ import {useLocation} from 'react-router-dom';
 import axios from 'axios'
 import Header from '../components/Header'
 import MoviesFirst from '../components/MoviesFirst'
+import { UserProvider } from "../context/UserContext"
 
 
 function ContainerMovies() {
@@ -30,10 +31,12 @@ class Movies extends React.Component{
 
     render() {
         return(
-            <div id="movies">
-                <Header />
-                <MoviesFirst moviesList={this.state.movies} current_page={this.state.current_page} last_page={this.state.last_page} />
-            </div>
+            <UserProvider>
+                <div id="movies">
+                    <Header />
+                    <MoviesFirst moviesList={this.state.movies} current_page={this.state.current_page} last_page={this.state.last_page} />
+                </div>
+            </UserProvider>
         )
     }
 }

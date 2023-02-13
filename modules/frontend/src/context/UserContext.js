@@ -5,6 +5,7 @@ export const UserContext = createContext()
 
 export const UserProvider = (props) => {
     const [token, setToken] = useState(localStorage.getItem("awesomeLeadsToken"))
+    const [name, setName] = useState(null)
 
     useEffect(() => {
         const fetchUser = () => {
@@ -18,7 +19,7 @@ export const UserProvider = (props) => {
                 }
 
                 axios.post(`http://0.0.0.0:8000/api/users/me`, requestOptions).then((response) => {
-                    console.log(response.data.login)
+                    setName(response.data.login)
                     if (response.statusText != 'OK') {
                         setToken('null')
                     }
@@ -31,7 +32,7 @@ export const UserProvider = (props) => {
   }, [token])
 
   return (
-    <UserContext.Provider value={[token, setToken]}>
+    <UserContext.Provider value={[token, setToken, name, setName]}>
       {props.children}
     </UserContext.Provider>
   )

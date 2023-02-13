@@ -4,6 +4,7 @@ import axios from 'axios'
 import Header from '../components/Header'
 import ItemMovieFirst from '../components/ItemMovieFirst'
 import ItemMovieSecond from '../components/ItemMovieSecond'
+import { UserProvider } from "../context/UserContext"
 
 
 export default function ItemMovie() {
@@ -20,10 +21,12 @@ export default function ItemMovie() {
     if (!movie) return null;
 
     return (
-        <div id="movie">
-            <Header />
-            <ItemMovieFirst movie={movie} />
-            <ItemMovieSecond movie={movie} />
-        </div>
+        <UserProvider>
+            <div id="movie">
+                <Header />
+                <ItemMovieFirst movie={movie} />
+                <ItemMovieSecond movie={movie} />
+            </div>
+        </UserProvider>
     )
 }

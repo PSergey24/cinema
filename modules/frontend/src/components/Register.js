@@ -16,20 +16,9 @@ const Register = () => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: { login: login, hashed_password: password },
-//      body: JSON.stringify({ login: login, hashed_password: password }),
     }
 
     console.log(requestOptions)
-//    const response = fetch("/api/users", requestOptions);
-//    const data = response.json();
-//
-//    console.log(response)
-//    console.log(data)
-//    if (!response.ok) {
-//      setErrorMessage(data.detail);
-//    } else {
-//      setToken(data.access_token);
-//    }
     axios.post(`http://0.0.0.0:8000/api/users`, requestOptions).then((response) => {
         console.log(response.statusText)
         if (response.statusText != 'OK') {
