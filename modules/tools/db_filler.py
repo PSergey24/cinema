@@ -17,7 +17,7 @@ def db_creator():
 
 def movies_csv_to_db():
     db = SessionLocal()
-    df = pd.read_csv('data/movies_2.csv', sep='\t', on_bad_lines='skip')
+    df = pd.read_csv('data/my_db/movies.csv', sep='\t', on_bad_lines='skip')
     df = df.replace(['\\N'], None)
 
     index_movie = crud.get_last_movie_id(db=db)
