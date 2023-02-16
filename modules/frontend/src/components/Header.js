@@ -9,7 +9,8 @@ const Header = () => {
     setToken('null')
     setName(null)
   }
-
+    console.log(ratings)
+    console.log(likes)
   return (
     <div className="container-fluid header">
         <div className="container">

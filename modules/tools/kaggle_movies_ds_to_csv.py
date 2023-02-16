@@ -160,6 +160,7 @@ def kaggle_rating_db_to_csv():
     df_users.to_csv('data/my_db/users.csv', index=False, sep='\t')
 
 
+# update descriptions
 def update_info_kaggle_mdb_to_imdb():
     my_db = 'data/my_db/movies.csv'
 
@@ -180,11 +181,10 @@ def update_info_kaggle_mdb_to_imdb():
 
 
 def kaggle_movies_db_to_csv():
-    my_db = 'data/my_db/movies_2.csv'
-
     kaggle_movies_metadata = 'data/kaggle_movie_dataset/movies_metadata.csv'
     df_movies_metadata = pd.read_csv(kaggle_movies_metadata, on_bad_lines='skip')
 
+    my_db = 'data/my_db/movies_2.csv'
     df_my_db = pd.read_csv(my_db, sep='\t', on_bad_lines='skip')
 
     index = len(df_my_db)
@@ -223,3 +223,56 @@ def get_genres(input_genres):
             genres += ', '
     return genres
 
+
+def union_imdb_kaggle_ds():
+    kaggle_movies_metadata = 'data/kaggle_movie_dataset/movies_metadata.csv'
+    df_movies_metadata = pd.read_csv(kaggle_movies_metadata, on_bad_lines='skip')
+
+    imdb_title_rating = 'data/IMDB/title.ratings.tsv'
+    df_imdb_title_rating = pd.read_csv(imdb_title_rating, sep='\t', on_bad_lines='skip')
+
+    my_db = 'data/my_db/movies_3.csv'
+    df_my_db = pd.read_csv(my_db, sep='\t', on_bad_lines='skip')
+
+    df_my_db[['num_votes', 'popularity_kaggle_ds', 'id_kaggle_ds', 'production_countries',
+              'production_companies']] = ''
+
+    for i, row in df_my_db.iterrows():
+        match_kaggle = df_movies_metadata.loc[df_movies_metadata['imdb_id'] == row['tconst']]
+        match_imdb = df_imdb_title_rating.loc[df_imdb_title_rating['tconst'] == row['tconst']]
+
+        if len(match_imdb) > 0:
+            df_my_db.loc[i, 'num_votes'] = match_imdb.iloc[0]["numVotes"]
+
+        if len(match_kaggle) > 0:
+            df_my_db.loc[i, 'popularity_kaggle_ds'] = match_kaggle.iloc[0]["popularity"]
+            df_my_db.loc[i, 'id_kaggle_ds'] = match_kaggle.iloc[0]["id"]
+            df_my_db.loc[i, 'production_countries'] = parse_json(match_kaggle.iloc[0]["production_countries"])
+            df_my_db.loc[i, 'production_companies'] = parse_json(match_kaggle.iloc[0]["production_companies"])
+
+        if i % 500 == 0:
+            print(f'{i}')
+    df_my_db.to_csv('data/my_db/movies_4.csv', index=False, sep='\t')
+
+
+def parse_json(input_str):
+    try:
+        data = input_str.split('}')
+        return process_data(data)
+    except:
+        print('Exception: string splitting')
+        return ''
+
+
+def process_data(data):
+    output = ''
+    for i in range(len(data) - 1):
+        try:
+            name = re.findall("\'name\': [^,]*,{0,1}", data[i])[0].split(': ')[1].replace('\'', '').replace('\"', '').\
+                replace(',', '')
+            output += name
+            if i < len(data) - 2:
+                output += ','
+        except:
+            print('Exception: json parsing')
+    return output
