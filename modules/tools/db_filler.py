@@ -15,8 +15,20 @@ def db_creator():
     models.Base.metadata.create_all(bind=engine)
 
 
-def movies_csv_to_db():
+def csv_to_db():
+    db_creator()
+
     db = SessionLocal()
+
+    movies_csv_to_db(db)
+    actors_csv_to_db(db)
+    users_csv_to_db(db)
+    users_ratings_csv_to_db(db)
+    users_likes_csv_to_db(db)
+    actors_movies_csv_to_db(db)
+
+
+def movies_csv_to_db(db):
     df = pd.read_csv('data/my_db/movies.csv', sep='\t', on_bad_lines='skip')
     df = df.replace(['\\N'], None)
 
@@ -27,10 +39,17 @@ def movies_csv_to_db():
 
         movie = create_movie(row)
         genres = create_genres(genres_list, index_movie)
-        crud.create_movie(db=db, movie=movie)
         crud.create_genres(db=db, genres=genres)
-        print(f'{i}/{len(df)}, {row["name"]}')
+        crud.create_movie(db=db, movie=movie)
+
+        if index_movie % 1000 == 0:
+            print(f'movies: {i}/{len(df)}')
+
+        if index_movie == 3100:
+            break
+
         index_movie += 1
+    print('Movies were uploaded from csv to db')
 
 
 def create_movie(row):
@@ -45,6 +64,61 @@ def create_genres(genres_list, movie_id):
 
 def create_genre(genre, movie_id):
     return schemas.GenreBase(genre=genre, movie_id=movie_id)
+
+
+def actors_csv_to_db(db):
+    df = pd.read_csv('data/my_db/actors.csv', sep='\t', on_bad_lines='skip')
+
+    for i, row in df.iterrows():
+        crud.create_actor(db=db, actor=row)
+
+        if i % 10000 == 0:
+            print(f'actors: {i}/{len(df)}')
+    print('Actors were uploaded from csv to db')
+
+
+def actors_movies_csv_to_db(db):
+    df = pd.read_csv('data/my_db/actors_movies.csv', sep='\t', on_bad_lines='skip')
+
+    for i, row in df.iterrows():
+        crud.create_actors_movies(db=db, item=row)
+
+        if i % 10000 == 0:
+            print(f'actors_movies: {i}/{len(df)}')
+    print('ActorsMovies were uploaded from csv to db')
+
+
+def users_csv_to_db(db):
+    df = pd.read_csv('data/my_db/users.csv', sep='\t', on_bad_lines='skip')
+
+    for i, row in df.iterrows():
+        crud.create_login(db=db, user=row)
+
+        if i == 100:
+            break
+    print('Users were uploaded from csv to db')
+
+
+def users_ratings_csv_to_db(db):
+    df = pd.read_csv('data/my_db/users_ratings.csv', sep='\t', on_bad_lines='skip')
+
+    for i, row in df.iterrows():
+        crud.create_users_ratings(db=db, item=row)
+
+        if i % 10000 == 0:
+            print(f'users_ratings: {i}/{len(df)}')
+    print('UsersRatings were uploaded from csv to db')
+
+
+def users_likes_csv_to_db(db):
+    df = pd.read_csv('data/my_db/users_likes.csv', sep='\t', on_bad_lines='skip')
+
+    for i, row in df.iterrows():
+        crud.create_users_likes(db=db, item=row)
+
+        if i % 10000 == 0:
+            print(f'users_likes: {i}/{len(df)}')
+    print('UsersLikes were uploaded from csv to db')
 
 
 # extract data

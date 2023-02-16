@@ -124,7 +124,7 @@ def kaggle_rating_db_to_csv():
             df = pd.DataFrame([d])
             df_users = pd.concat([df_users, df], ignore_index=True)
 
-        if (i % 50000) == 0:
+        if i % 50000 == 0:
             print(f'processed {i} rows, {datetime.now().strftime("%H:%M:%S")}')
 
         if len(item) == 0:

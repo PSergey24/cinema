@@ -24,7 +24,7 @@ export default function ItemMovie() {
         <UserProvider>
             <div id="movie">
                 <Header />
-                <ItemMovieFirst movie={movie} />
+                <ItemMovieFirst movie={movie} id={movieId} />
                 <ItemMovieSecond movie={movie} />
             </div>
         </UserProvider>

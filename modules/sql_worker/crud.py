@@ -52,7 +52,7 @@ def get_current_user(db, token):
         raise _fastapi.HTTPException(
             status_code=401, detail="Invalid Email or Password"
         )
-    return _schemas.User.from_orm(user)
+    return user
 
 
 def create_movie(db: Session, movie):
@@ -88,6 +88,42 @@ def create_comment(db: Session, movie_id, comment, is_toxic, current_time):
     db.add(db_comment)
     db.commit()
     db.refresh(db_comment)
+
+
+def create_actor(db: Session, actor):
+    db_movie = models.Actor(id=int(actor['id']), name=actor['name'], birthday=actor['birthday'], img=actor['img'])
+    db.add(db_movie)
+    db.commit()
+    db.refresh(db_movie)
+
+
+def create_actors_movies(db: Session, item):
+    db_movie = models.ActorsMovies(actor_id=int(item['actor_id']), movie_id=int(item['movie_id']))
+    db.add(db_movie)
+    db.commit()
+    db.refresh(db_movie)
+
+
+def create_login(db: Session, user):
+    db_movie = models.User(id=int(user['id']), login=user['login'], hashed_password=user['password'])
+    db.add(db_movie)
+    db.commit()
+    db.refresh(db_movie)
+
+
+def create_users_likes(db: Session, item):
+    db_movie = models.UsersLikes(id=int(item['id']), user_id=int(item['user_id']), movie_id=int(item['movie_id']))
+    db.add(db_movie)
+    db.commit()
+    db.refresh(db_movie)
+
+
+def create_users_ratings(db: Session, item):
+    db_movie = models.UsersRatings(id=int(item['id']), user_id=int(item['user_id']), movie_id=int(item['movie_id']),
+                                   rating=float(item['rating']))
+    db.add(db_movie)
+    db.commit()
+    db.refresh(db_movie)
 
 
 def get_movies(db: Session):

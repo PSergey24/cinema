@@ -3,7 +3,7 @@ import { UserContext } from "../context/UserContext"
 
 
 const Header = () => {
-  const [token, setToken, name, setName] = useContext(UserContext)
+  const [token, setToken, name, setName, ratings, likes] = useContext(UserContext)
 
   const handleLogout = () => {
     setToken('null')
