@@ -6,6 +6,7 @@ from datetime import datetime
 from ast import literal_eval
 
 # https://www.kaggle.com/datasets/rounakbanik/the-movies-dataset
+# https://www.kaggle.com/datasets/shivamb/netflix-shows
 
 
 def fix_bugs():
