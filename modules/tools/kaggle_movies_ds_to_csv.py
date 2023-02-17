@@ -2,8 +2,8 @@ import pandas as pd
 import numpy as np
 import math
 import re
-import json
 from datetime import datetime
+from ast import literal_eval
 
 # https://www.kaggle.com/datasets/rounakbanik/the-movies-dataset
 
@@ -276,3 +276,51 @@ def process_data(data):
         except:
             print('Exception: json parsing')
     return output
+
+
+# json type to array
+def convert_features():
+    kaggle_keywords = 'data/kaggle_movie_dataset/keywords.csv'
+    df_keywords = pd.read_csv(kaggle_keywords, on_bad_lines='skip')
+
+    kaggle_credits = 'data/kaggle_movie_dataset/credits.csv'
+    df_credits = pd.read_csv(kaggle_credits, on_bad_lines='skip')
+
+    my_db = 'data/my_db/movies_4.csv'
+    df_my_db = pd.read_csv(my_db, sep='\t', on_bad_lines='skip')
+
+    df = pd.merge(df_credits, df_keywords, on='id')
+
+    features = ['cast', 'crew', 'keywords']
+    for feature in features:
+        df[feature] = df[feature].apply(literal_eval)
+
+    def get_director(x):
+        for i in x:
+            if i['job'] == 'Director':
+                return i['name']
+        return np.nan
+
+    def get_list(x):
+        if isinstance(x, list):
+            names = [i['name'].replace('\'', '') for i in x]
+            return names
+        return []
+
+    def genres_to_list(x):
+        if isinstance(x, str):
+            return x.split(',')
+        return []
+
+    df['director'] = df['crew'].apply(get_director)
+
+    features = ['cast', 'keywords']
+    for feature in features:
+        df[feature] = df[feature].apply(get_list)
+
+    df = pd.merge(df_my_db, df, left_on='id_kaggle_ds', right_on='id', how='left')
+    df = df.drop_duplicates(subset=['id_x'])
+    df = df.drop(columns=['id_y', 'crew'])
+    df = df.rename(columns={"id_x": "id"})
+    df['genres'] = df['genres'].apply(genres_to_list)
+    df.to_csv('data/my_db/movies_5.csv', index=False, sep='\t')
